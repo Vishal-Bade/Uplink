@@ -1,0 +1,84 @@
+version: '3.8'
+
+services:
+  # -------------------------------------------------------------
+  # 1. Primary Relational Database (PostgreSQL / Supabase compatible)
+  # -------------------------------------------------------------
+  postgres:
+    image: postgres:16-alpine
+    container_name: uplink-postgres
+    restart: always
+    environment:
+      POSTGRES_DB: uplink_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgrespassword
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./src/main/resources/schema.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - uplink-network
+
+  # -------------------------------------------------------------
+  # 2. Cache & Distributed Session Store (Redis)
+  # -------------------------------------------------------------
+  redis:
+    image: redis:7-alpine
+    container_name: uplink-redis
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - uplink-network
+
+  # -------------------------------------------------------------
+  # 3. AI / Processing Services (FastAPI Microservice)
+  # -------------------------------------------------------------
+  ai-service:
+    build:
+      context: ./ai_service
+      dockerfile: Dockerfile
+    container_name: uplink-ai-service
+    restart: always
+    ports:
+      - "8000:8000"
+    networks:
+      - uplink-network
+
+  # -------------------------------------------------------------
+  # 4. Spring Boot Modular Monolith Backend
+  # -------------------------------------------------------------
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: uplink-backend
+    restart: always
+    depends_on:
+      - postgres
+      - redis
+      - ai-service
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      DB_URL: jdbc:postgresql://postgres:5432/uplink_db
+      DB_USER: postgres
+      DB_PASSWORD: postgrespassword
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      AI_SERVICE_URL: http://ai-service:8000
+      JWT_SECRET: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
+    ports:
+      - "8080:8080"
+    networks:
+      - uplink-network
+
+networks:
+  uplink-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  redis_data:
