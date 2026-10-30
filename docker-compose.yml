@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   # -------------------------------------------------------------
-  # 1. Primary Relational Database (PostgreSQL / Supabase compatible)
+  # 1. Primary Relational Database (Local fallback / standalone)
   # -------------------------------------------------------------
   postgres:
     image: postgres:16-alpine
@@ -17,6 +17,11 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./src/main/resources/schema.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     networks:
       - uplink-network
 
@@ -31,6 +36,11 @@ services:
       - "6379:6379"
     volumes:
       - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     networks:
       - uplink-network
 
@@ -45,6 +55,11 @@ services:
     restart: always
     ports:
       - "8000:8000"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
     networks:
       - uplink-network
 
@@ -58,20 +73,27 @@ services:
     container_name: uplink-backend
     restart: always
     depends_on:
-      - postgres
-      - redis
-      - ai-service
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      ai-service:
+        condition: service_healthy
     environment:
       SPRING_PROFILES_ACTIVE: prod
-      DB_URL: jdbc:postgresql://postgres:5432/uplink_db
-      DB_USER: postgres
-      DB_PASSWORD: postgrespassword
+      # Defaults to container postgres, or overrides with cloud Supabase pooler via .env
+      SUPABASE_DB_URL: ${SUPABASE_DB_URL:-jdbc:postgresql://postgres:5432/uplink_db}
+      SUPABASE_DB_USER: ${SUPABASE_DB_USER:-postgres}
+      SUPABASE_DB_PASSWORD: ${SUPABASE_DB_PASSWORD:-postgrespassword}
       REDIS_HOST: redis
       REDIS_PORT: 6379
       AI_SERVICE_URL: http://ai-service:8000
-      JWT_SECRET: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
+      JWT_SECRET: ${JWT_SECRET:-404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970}
+      STORAGE_UPLOAD_DIR: ./uploads
     ports:
       - "8080:8080"
+    volumes:
+      - uplink_uploads:/app/uploads
     networks:
       - uplink-network
 
@@ -82,3 +104,4 @@ networks:
 volumes:
   postgres_data:
   redis_data:
+  uplink_uploads:
