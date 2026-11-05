@@ -22,6 +22,7 @@ public class ApplicationStatusHistory {
     @Column(nullable = false, length = 50)
     private String status;
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "changed_by")
     private User changedBy;

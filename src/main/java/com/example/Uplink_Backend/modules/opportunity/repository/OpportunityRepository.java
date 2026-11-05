@@ -18,10 +18,10 @@ public interface OpportunityRepository extends JpaRepository<Opportunity, UUID> 
     List<Opportunity> findByCompanyId(UUID companyId);
 
     @Query("SELECT o FROM Opportunity o WHERE o.isActive = true " +
-            "AND (:type IS NULL OR LOWER(o.type) = LOWER(:type)) " +
-            "AND (:workMode IS NULL OR LOWER(o.workMode) = LOWER(:workMode)) " +
-            "AND (:location IS NULL OR LOWER(o.location) LIKE LOWER(CONCAT('%', :location, '%'))) " +
-            "AND (:keyword IS NULL OR LOWER(o.title) LIKE LOWER(CONCAT('%', :keyword, '%')) OR LOWER(o.description) LIKE LOWER(CONCAT('%', :keyword, '%')))")
+            "AND (:type IS NULL OR LOWER(o.type) = LOWER(CAST(:type AS string))) " +
+            "AND (:workMode IS NULL OR LOWER(o.workMode) = LOWER(CAST(:workMode AS string))) " +
+            "AND (:location IS NULL OR LOWER(o.location) LIKE LOWER(CONCAT('%', CAST(:location AS string), '%'))) " +
+            "AND (:keyword IS NULL OR (LOWER(o.title) LIKE LOWER(CONCAT('%', CAST(:keyword AS string), '%')) OR LOWER(o.description) LIKE LOWER(CONCAT('%', CAST(:keyword AS string), '%'))))")
     Page<Opportunity> searchOpportunities(@Param("type") String type,
                                           @Param("workMode") String workMode,
                                           @Param("location") String location,

@@ -1,6 +1,7 @@
 package com.example.Uplink_Backend.modules.user.entity;
 
 import com.example.Uplink_Backend.modules.auth.entity.User;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -14,6 +15,7 @@ public class Education {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;

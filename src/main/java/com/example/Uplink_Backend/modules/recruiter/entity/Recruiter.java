@@ -1,6 +1,7 @@
 package com.example.Uplink_Backend.modules.recruiter.entity;
 
 import com.example.Uplink_Backend.modules.auth.entity.User;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import java.time.Instant;
 import java.util.UUID;
@@ -13,6 +14,7 @@ public class Recruiter {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
+    @JsonIgnore
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", unique = true, nullable = false)
     private User user;

@@ -84,7 +84,7 @@ The application is pre-configured to connect to Supabase PostgreSQL using connec
 
 ```properties
 # src/main/resources/application.properties
-spring.datasource.url=jdbc:postgresql://aws-0-ap-south-1.pooler.supabase.com:6543/postgres?sslmode=require
+spring.datasource.url=jdbc:postgresql://aws-0-ap-south-1.pooler.supabase.com:6543/postgres?sslmode=require&prepareThreshold=0
 spring.datasource.driver-class-name=org.postgresql.Driver
 spring.datasource.username=postgres.phdfzmmehvglnnxchjrr
 spring.datasource.password=Bhilwade@123
@@ -171,8 +171,8 @@ The database includes realistic test accounts pre-populated on startup:
 | Role | Email | Password | Details |
 | :--- | :--- | :--- | :--- |
 | **Admin** | `admin@uplink.edu` | `Admin@123` | Full administrative & platform moderation privileges |
-| **Recruiter** | `recruiter@uplink.edu` | `Recruiter@123` | Associated with Google / Microsoft, can post jobs & review applicants |
-| **Student** | `student@uplink.edu` | `Student@123` | Complete portfolio (Education, Projects, Skills, Certificates) |
+| **Recruiter** | `recruiter@google.com` | `Recruiter@123` | Associated with Google / Microsoft, can post jobs & review applicants |
+| **Student** | `student@mit.edu` | `Student@123` | Complete portfolio (Education, Projects, Skills, Certificates) |
 
 ---
 

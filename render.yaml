@@ -1,0 +1,21 @@
+services:
+  - type: web
+    name: uplink-backend
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    plan: free
+    healthCheckPath: /actuator/health
+    envVars:
+      - key: SPRING_PROFILES_ACTIVE
+        value: prod
+      - key: SUPABASE_DB_URL
+        value: jdbc:postgresql://aws-0-ap-south-1.pooler.supabase.com:6543/postgres?sslmode=require&prepareThreshold=0
+      - key: SUPABASE_DB_USER
+        value: postgres.phdfzmmehvglnnxchjrr
+      - key: SUPABASE_DB_PASSWORD
+        value: Bhilwade@123
+      - key: JWT_SECRET
+        value: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
+      - key: JAVA_OPTS
+        value: -XX:+UseSerialGC -Xmx384m -Djava.security.egd=file:/dev/./urandom
+

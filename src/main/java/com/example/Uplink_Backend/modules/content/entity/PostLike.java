@@ -21,6 +21,7 @@ public class PostLike {
     @JoinColumn(name = "post_id", nullable = false)
     private Post post;
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;

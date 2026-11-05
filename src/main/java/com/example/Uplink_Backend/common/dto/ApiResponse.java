@@ -20,19 +20,19 @@ public class ApiResponse<T> {
     }
 
     public static <T> ApiResponse<T> ok(String message, T data) {
-        return new ApiResponse<>(true, message, data);
+        return new ApiResponse<T>(true, message, data);
     }
 
     public static <T> ApiResponse<T> ok(T data) {
-        return new ApiResponse<>(true, "Operation successful", data);
+        return new ApiResponse<T>(true, "Operation successful", data);
     }
 
     public static <T> ApiResponse<T> created(String message, T data) {
-        return new ApiResponse<>(true, message, data);
+        return new ApiResponse<T>(true, message, data);
     }
 
     public static <T> ApiResponse<T> error(String message) {
-        return new ApiResponse<>(false, message, null);
+        return new ApiResponse<T>(false, message, null);
     }
 
     public boolean isSuccess() {

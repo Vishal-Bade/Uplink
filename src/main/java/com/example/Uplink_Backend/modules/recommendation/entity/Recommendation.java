@@ -1,6 +1,7 @@
 package com.example.Uplink_Backend.modules.recommendation.entity;
 
 import com.example.Uplink_Backend.modules.auth.entity.User;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.util.UUID;
@@ -13,6 +14,7 @@ public class Recommendation {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;

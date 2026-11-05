@@ -2,6 +2,7 @@ package com.example.Uplink_Backend.modules.opportunity.entity;
 
 import com.example.Uplink_Backend.modules.auth.entity.User;
 import com.example.Uplink_Backend.modules.recruiter.entity.Company;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -22,6 +23,7 @@ public class Opportunity {
     @JoinColumn(name = "company_id", nullable = false)
     private Company company;
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "created_by", nullable = false)
     private User createdBy;

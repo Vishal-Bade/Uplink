@@ -1,6 +1,7 @@
 package com.example.Uplink_Backend.modules.content.entity;
 
 import com.example.Uplink_Backend.modules.auth.entity.User;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -28,9 +29,11 @@ public class Post {
     @Column(name = "created_at", updatable = false)
     private Instant createdAt = Instant.now();
 
+    @JsonIgnore
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Comment> comments = new ArrayList<>();
 
+    @JsonIgnore
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<PostLike> likes = new ArrayList<>();
 
