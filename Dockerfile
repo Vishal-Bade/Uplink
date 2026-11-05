@@ -21,23 +21,21 @@ RUN ./mvnw clean package -DskipTests -B
 FROM eclipse-temurin:21-jre-alpine
 WORKDIR /app
 
-# Add curl for health check support and create secure non-root user
+# Add curl, create uploads directory, and configure permissions for non-root user
 RUN apk add --no-cache curl && \
-    addgroup -S spring && adduser -S spring -G spring
+    addgroup -S spring && adduser -S spring -G spring && \
+    mkdir -p /app/uploads && \
+    chown -R spring:spring /app
 
 USER spring:spring
 
-# Expose Spring Boot web port
+# Expose default web port
 EXPOSE 8080
 
 # Copy executable jar from build stage
-COPY --from=build /app/target/*.jar app.jar
+COPY --from=build --chown=spring:spring /app/target/*.jar app.jar
 
-# JVM Container Ergonomics and GC optimization
-ENV JAVA_OPTS="-XX:+UseG1GC -XX:MaxRAMPercentage=75.0 -Djava.security.egd=file:/dev/./urandom"
-
-# Healthcheck to verify Tomcat status
-HEALTHCHECK --interval=30s --timeout=10s --start-period=45s --retries=3 \
-  CMD curl -f http://localhost:8080/actuator/health || exit 0
+# JVM Container Ergonomics optimized for cloud environments (512MB RAM)
+ENV JAVA_OPTS="-XX:+UseSerialGC -Xmx384m -Djava.security.egd=file:/dev/./urandom"
 
 ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar app.jar"]
